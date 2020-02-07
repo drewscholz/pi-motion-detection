@@ -1,10 +1,11 @@
 #!/usr/bin/python3
-from io import StringIO, BytesIO
-import subprocess
-import os
-import time
+from io import BytesIO
 from datetime import datetime
 from PIL import Image
+
+import os
+import subprocess
+
 
 # Original code written by brainflakes and modified by pageauc to exit
 # image scanning for loop as soon as the sensitivity value is exceeded.
@@ -18,19 +19,16 @@ from PIL import Image
 # ForceCapture   - (whether to force an image to be captured every forceCaptureTime seconds)
 # filepath       - location of folder to save photos
 # filenamePrefix - string that prefixes the file name for easier identification of files.
+
+
 threshold = 10
 sensitivity = 180
 force_capture = True
 force_capture_time = 60 * 60 # Once an hour
 filepath = "/home/pi/images"
-
-# File photo size settings
-save_width = 1280
-save_height = 960
 disk_space_to_reserve = 40 * 1024 * 1024 # Keep 40 mb free on disk
 
-
-# Capture a small test image (for motion detection)
+# Capture a small test image to stdout and save to variable buffer
 def capture_test_image():
     command = "raspistill -t 1 -w 100 -h 75 -e bmp -o -"
     image_data = BytesIO()
@@ -42,13 +40,12 @@ def capture_test_image():
     print(".")
     return im, buffer
 
-# Save a full size image to disk
+# Save a higher quality image to disk
 def save_image():
     keep_disk_space_free()
     time = datetime.now()
     t = time.strftime("%Y-%m-%d_%H:%M:%S")
     filename = filepath + "/"+ t +".jpg"
-    #subprocess.call("fswebcam -r 1296x972 %s" % filename, shell=True)
     command = "raspistill -t 1 -w 1640 -h 1232 -q 50 -a 12 -e jpg -o %s" % filename
     subprocess.call(command, shell=True)
     print("SAVING IMAGE %s" % filename)
@@ -90,11 +87,12 @@ while True:
         for y in range(0, 75):
             # Just check green channel as it's the highest quality channel
             pixdiff = abs(buffer1[x,y][1] - buffer2[x,y][1])
+
             if pixdiff > threshold:
                 changed_pixels += 1
 
-        # Changed logic - If movement sensitivity exceeded then
-        # Save image and Exit before full image scan complete
+        # If movement sensitivity exceeded then
+        # save image and Exit before full image scan complete
         if changed_pixels > sensitivity:
             last_capture = time.time()
             save_image()

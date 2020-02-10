@@ -29,7 +29,7 @@ class Camera():
         time = datetime.now()
         t = time.strftime("%Y-%m-%d_%H:%M:%S")
         filename = self.filepath + "/"+ t +".jpg"
-        command = "raspistill -t 1 -w 1640 -h 1232 -q 50 -a 12 -e jpg -o %s" % filename
+        command = "raspistill -t 1 -w 1640 -h 1232 -q 20 -a 12 -e jpg -o %s" % filename
         subprocess.call(command, shell=True)
         print("SAVING IMAGE %s" % filename)
 

@@ -37,9 +37,9 @@ last_capture = time.time()
 os.system('clear')
 print("MOTION DETECTED STARTED")
 
-led.turn_on_red()
 
 try:
+    led.turn_on_red()
     while True:
         image2, buffer2 = cam.capture_test_image()
         changed_pixels = 0
@@ -52,9 +52,11 @@ try:
                     changed_pixels += 1
 
             if changed_pixels > sensitivity:
+                led.turn_off_red()
                 last_capture = time.time()
                 cam.save_image()
                 led.flash_green()
+                led.turn_on_red()
                 break
             continue
 

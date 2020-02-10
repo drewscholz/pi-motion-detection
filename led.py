@@ -1,4 +1,4 @@
-# import RPi.GPIO as GPIO
+import RPi.GPIO as GPIO
 
 
 class Led():
@@ -7,20 +7,17 @@ class Led():
     bluePin = 15
 
     def on(self, pin):
-        print('on')
-        # GPIO.setmode(GPIO.BOARD)
-        # GPIO.setup(pin, GPIO.OUT)
-        # GPIO.output(pin, GPIO.HIGH)
+        GPIO.setmode(GPIO.BOARD)
+        GPIO.setup(pin, GPIO.OUT)
+        GPIO.output(pin, GPIO.HIGH)
 
     def off(self, pin):
-        print('off')
-        # GPIO.setmode(GPIO.BOARD)
-        # GPIO.setup(pin, GPIO.OUT)
-        # GPIO.output(pin, GPIO.LOW)
+        GPIO.setmode(GPIO.BOARD)
+        GPIO.setup(pin, GPIO.OUT)
+        GPIO.output(pin, GPIO.LOW)
 
     def cleanup(self):
-        print('cleanup')
-        # GPIO.cleanup()
+        GPIO.cleanup()
 
     def turn_on_red(self):
         self.on(self.redPin)

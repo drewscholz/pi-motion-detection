@@ -26,9 +26,8 @@ threshold = 10
 sensitivity = 180
 force_capture = True
 force_capture_time = 60 * 60 # Once an hour
-filepath = "/home/pi/images"
 
-cam = Camera()
+cam = Camera("/home/pi/images")
 led = Led()
 
 image1, buffer1 = cam.capture_test_image()

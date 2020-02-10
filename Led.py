@@ -1,5 +1,5 @@
 import RPi.GPIO as GPIO
-
+import time
 
 class Led():
     redPin = 11
@@ -27,4 +27,5 @@ class Led():
 
     def flash_green(self):
         self.on(self.greenPin)
+        time.sleep(0.10)
         self.off(self.greenPin)

@@ -1,8 +1,8 @@
 #!/usr/bin/python3
-from io import BytesIO
 from datetime import datetime
 from PIL import Image
-from . import Led
+from Led import Led
+from Camera import Camera
 
 import os
 import subprocess
@@ -27,85 +27,44 @@ sensitivity = 180
 force_capture = True
 force_capture_time = 60 * 60 # Once an hour
 filepath = "/home/pi/images"
-disk_space_to_reserve = 40 * 1024 * 1024 # Keep 40 mb free on disk
 
-# Capture a small test image to stdout and save to variable buffer
-def capture_test_image():
-    command = "raspistill -t 1 -w 100 -h 75 -e bmp -o -"
-    image_data = BytesIO()
-    image_data.write(subprocess.check_output(command, shell=True))
-    image_data.seek(0)
-    im = Image.open(image_data)
-    buffer = im.load()
-    image_data.close()
-    print(".")
-    return im, buffer
+cam = Camera()
+led = Led()
 
-# Save a higher quality image to disk
-def save_image():
-    keep_disk_space_free()
-    time = datetime.now()
-    t = time.strftime("%Y-%m-%d_%H:%M:%S")
-    filename = filepath + "/"+ t +".jpg"
-    command = "raspistill -t 1 -w 1640 -h 1232 -q 50 -a 12 -e jpg -o %s" % filename
-    subprocess.call(command, shell=True)
-    print("SAVING IMAGE %s" % filename)
+image1, buffer1 = cam.capture_test_image()
 
-# Keep free space above given level
-def keep_disk_space_free():
-    if (get_free_space() < disk_space_to_reserve):
-        for filename in sorted(os.listdir(filepath)):
-            if filename.startswith("2020") and filename.endswith(".jpg"): # consider a unique filename beginning
-                os.remove(filename)
-                print("Deleted %s to avoid filling disk" % filename)
-                if (get_free_space() > disk_space_to_reserve):
-                    return
-
-# Get available disk space
-def get_free_space():
-    st = os.statvfs(filepath)
-    du = st.f_bavail * st.f_frsize
-    return du
-
-# Get first image
-image1, buffer1 = capture_test_image()
-
-# Reset last capture time
 last_capture = time.time()
 
 os.system('clear')
 print("MOTION DETECTED STARTED")
 
-while True:
+led.turn_on_red()
 
-    # Get comparison image
-    image2, buffer2 = capture_test_image()
+try:
+    while True:
+        image2, buffer2 = cam.capture_test_image()
+        changed_pixels = 0
 
-    # Count changed pixels
-    changed_pixels = 0
-    for x in range(0, 100):
-        # Scan one line of image then check sensitivity for movement
-        for y in range(0, 75):
-            # Just check green channel as it's the highest quality channel
-            pixdiff = abs(buffer1[x,y][1] - buffer2[x,y][1])
+        for x in range(0, 100):
+            for y in range(0, 75):
+                pixdiff = abs(buffer1[x,y][1] - buffer2[x,y][1])
 
-            if pixdiff > threshold:
-                changed_pixels += 1
+                if pixdiff > threshold:
+                    changed_pixels += 1
 
-        # If movement sensitivity exceeded then
-        # save image and Exit before full image scan complete
-        if changed_pixels > sensitivity:
-            last_capture = time.time()
-            save_image()
-            break
-        continue
+            if changed_pixels > sensitivity:
+                last_capture = time.time()
+                cam.save_image()
+                led.flash_green()
+                break
+            continue
 
-    # Check force capture
-    if force_capture:
-        if time.time() - last_capture > force_capture_time:
-            changed_pixels = sensitivity + 1
+        if force_capture:
+            if time.time() - last_capture > force_capture_time:
+                changed_pixels = sensitivity + 1
 
-    # Swap comparison buffers
-    image1  = image2
-    buffer1 = buffer2
+        image1  = image2
+        buffer1 = buffer2
 
+except KeyboardInterrupt:
+    led.cleanup()

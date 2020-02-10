@@ -1,5 +1,4 @@
 import RPi.GPIO as GPIO
-import time
 
 
 class Led():
@@ -7,26 +6,25 @@ class Led():
     greenPin = 13
     bluePin = 15
 
-    def on(pin):
+    def on(self, pin):
         GPIO.setmode(GPIO.BOARD)
         GPIO.setup(pin, GPIO.OUT)
         GPIO.output(pin, GPIO.HIGH)
 
-    def off(pin):
+    def off(self, pin):
         GPIO.setmode(GPIO.BOARD)
         GPIO.setup(pin, GPIO.OUT)
         GPIO.output(pin, GPIO.LOW)
 
-    def cleanip():
-    mmmmGPIO.cleanup()
+    def cleanup(self):
+        GPIO.cleanup()
 
-    def turn_on_red():
+    def turn_on_red(self):
         on(self.redPin)
 
-    def torn_off_red():
+    def turn_off_red(self):
         off(self.redPin)
 
-    def flash_green():
+    def flash_green(self):
         on(self.greenPin)
         off(self.greenPin)
-

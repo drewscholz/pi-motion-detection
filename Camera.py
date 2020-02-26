@@ -5,7 +5,11 @@ from PIL import Image
 import os
 import subprocess
 import time
+import numpy as np
+import pandas as pd
 
+# ToDo: move memory management to it's own class
+    # add function to clean house once a week
 
 class Camera():
 
@@ -14,15 +18,20 @@ class Camera():
     def __init__(self, filepath):
         self.filepath = filepath
 
-    def capture_test_image(self):
+    def get_test_image(self):
         command = "raspistill -w 100 -h 75 -t 100 -e bmp -th none -o -"
+
         image_data = BytesIO()
         image_data.write(subprocess.check_output(command, shell=True))
         image_data.seek(0)
+
         im = Image.open(image_data)
         buffer = im.load()
         image_data.close()
-        return im, buffer
+
+        buffer_df = self.image_to_dataframe(buffer)
+
+        return buffer_df
 
     def save_image(self):
         self.keep_disk_space_free()
@@ -32,6 +41,12 @@ class Camera():
         command = "raspistill -w 640 -h 480 -t 100 -q 10 -a 12 -e jpg -o %s" % filename
         subprocess.call(command, shell=True)
         print("SAVING IMAGE %s" % filename)
+
+    def image_to_dataframe(self, buffer):
+        rgb = buffer.convert("RGB")
+        array = np.array(rgb.getdata())
+        df = pd.DataFrame(array, columns=['red', 'green', 'blue'])
+        return df
 
      # Keep free space above given level
     def keep_disk_space_free(self):

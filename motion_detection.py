@@ -5,6 +5,7 @@ from Led import Led
 from Camera import Camera
 
 import os
+import time
 import subprocess
 
 
@@ -54,15 +55,16 @@ try:
             if changed_pixels > sensitivity:
                 led.turn_off_red()
                 last_capture = time.time()
+                led.turn_on_green()
                 cam.save_image()
-                led.flash_green()
+                led.turn_off_green()
                 led.turn_on_red()
                 break
             continue
 
-        if force_capture:
-            if time.time() - last_capture > force_capture_time:
-                changed_pixels = sensitivity + 1
+        #if force_capture:
+            #if time.time() - last_capture > force_capture_time:
+                #changed_pixels = sensitivity + 1
 
         image1  = image2
         buffer1 = buffer2

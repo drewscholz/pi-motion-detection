@@ -25,7 +25,9 @@ class Led():
     def turn_off_red(self):
         self.off(self.redPin)
 
-    def flash_green(self):
+    def turn_on_green(self):
         self.on(self.greenPin)
-        time.sleep(0.10)
+
+    def turn_off_green(self):
         self.off(self.greenPin)
+

@@ -15,7 +15,7 @@ class Camera():
         self.filepath = filepath
 
     def capture_test_image(self):
-        command = "raspistill -t 1 -w 100 -h 75 -e bmp -o -"
+        command = "raspistill -w 100 -h 75 -t 100 -e bmp -th none -o -"
         image_data = BytesIO()
         image_data.write(subprocess.check_output(command, shell=True))
         image_data.seek(0)
@@ -29,7 +29,7 @@ class Camera():
         time = datetime.now()
         t = time.strftime("%Y-%m-%d_%H:%M:%S")
         filename = self.filepath + "/"+ t +".jpg"
-        command = "raspistill -t 1 -w 1640 -h 1232 -q 20 -a 12 -e jpg -o %s" % filename
+        command = "raspistill -w 640 -h 480 -t 100 -q 10 -a 12 -e jpg -o %s" % filename
         subprocess.call(command, shell=True)
         print("SAVING IMAGE %s" % filename)
 

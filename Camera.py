@@ -48,6 +48,11 @@ class Camera():
         df = pd.DataFrame(array, columns=['red', 'green', 'blue'])
         return df
 
+    def compare_img_dfs(self, img_df1, img_df2):
+        changed_df = img_df1['red'] != img_df2['red']
+        changed_pixels = changed_df.sum()
+        return changed_pixels
+
      # Keep free space above given level
     def keep_disk_space_free(self):
         if (self.get_free_space() < self.disk_space_to_reserve):

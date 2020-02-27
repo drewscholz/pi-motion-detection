@@ -9,37 +9,42 @@ import time
 import subprocess
 import pandas as pd
 
+email = "5092880719@vtext.com"
+message = "bitch"
+text_message_timeout = 60 * 60 * 2
 
-# Threshold      - (how much a pixel has to change by to be marked as "changed")
-# Sensitivity    - (how many changed pixels before capturing an image) needs to be higher if noisy view
-
-# threshold = 10
-# sensitivity = 180
-
-sensitivity = 2000
+#sensitivity = 2000
+sensitivity_percent = 5
+start_time = time.time()
 
 cam = Camera("/home/pi/images")
 led = Led()
 
 img_df_1 = cam.get_test_image()
-# ToDo: grab pixel count and calculate a percentage for sensitivity
+img_size = len(img_df_1.index)
+sensitivity = (sensitivity_percent/100) * img_size
 
 print("MOTION DETECTED STARTED")
 
 try:
-    led.turn_on_red()
+    led.turn_on('red')
     while True:
         img_df_2 = cam.get_test_image()
 
         # check for differences in the red
-        changed_pixels = (img_df_1['red'] != img_df_2['red']).any(1)
+        changed_pixels = compare_img_dfs(img_df_2, img_df_2)
 
         if changed_pixels > sensitivity:
-            led.turn_off_red()
-            led.turn_on_green()
+            led.turn_on('green')
             cam.save_image()
-            led.turn_off_green()
-            led.turn_on_red()
+            led.turn_on('red')
+
+            # send text message alert (move to class)
+            capture_time = time.time()
+            if capture_time - start_time >= text_message_timeout:
+                #os.system(mail(email=email, message=message))
+                start_time = time.time()
+                pass
 
         img_df_1 = img_df_2
 

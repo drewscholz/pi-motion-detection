@@ -21,12 +21,12 @@ class Camera():
     def get_test_image(self):
         command = "raspistill -w 100 -h 75 -t 100 -e bmp -th none -o -"
 
-        image_data = BytesIO()
-        image_data.write(subprocess.check_output(command, shell=True))
-        image_data.seek(0)
-
-        img = Image.open(image_data)
-        image_data.close()
+        #image_data = BytesIO()
+        with BytesIO() as image_data:
+            image_data.write(subprocess.check_output(command, shell=True))
+            image_data.seek(0)
+            img = Image.open(image_data)
+        #image_data.close()
 
         img_df = self.image_to_dataframe(img)
 

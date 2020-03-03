@@ -1,6 +1,17 @@
 import RPi.GPIO as GPIO
 import time
 
+def verify_color(func):
+    def wrapper(color):
+        try:
+            color = str(color).lower
+            if color not in pins:
+                raise
+        except:
+            raise
+        return func(color)
+    return wrapper
+
 class Led():
     # redPin = 11
     # greenPin = 13
@@ -44,8 +55,7 @@ class Led():
 
     ###########################################
 
-    @verify_color
-    def turn_off(self)
+    def turn_off(self):
         if state is not None:
             self.off(pins.get(self.state))
 
@@ -64,13 +74,3 @@ class Led():
         self.state = color
 
 
-def verify_color(func):
-    def wrapper(color):
-        try:
-            color = str(color).lower
-            if color not in pins:
-                raise
-        except:
-            raise
-        return func(color)
-    return wrapper

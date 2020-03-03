@@ -25,13 +25,12 @@ class Camera():
         image_data.write(subprocess.check_output(command, shell=True))
         image_data.seek(0)
 
-        im = Image.open(image_data)
-        buffer = im.load()
+        img = Image.open(image_data)
         image_data.close()
 
-        buffer_df = self.image_to_dataframe(buffer)
+        img_df = self.image_to_dataframe(img)
 
-        return buffer_df
+        return img_df
 
     def save_image(self):
         self.keep_disk_space_free()
@@ -42,8 +41,8 @@ class Camera():
         subprocess.call(command, shell=True)
         print("SAVING IMAGE %s" % filename)
 
-    def image_to_dataframe(self, buffer):
-        rgb = buffer.convert("RGB")
+    def image_to_dataframe(self, img):
+        rgb = img.convert("RGB")
         array = np.array(rgb.getdata())
         df = pd.DataFrame(array, columns=['red', 'green', 'blue'])
         return df

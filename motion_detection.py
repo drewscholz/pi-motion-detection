@@ -10,7 +10,7 @@ import subprocess
 import pandas as pd
 
 email = "5092880719@vtext.com"
-message = "bitch"
+message = "message"
 text_message_timeout = 60 * 60 * 2
 
 #sensitivity = 2000

@@ -41,24 +41,27 @@ class Led():
     def green_to_red(self):
         self.off(self.pins['green'])
         self.on(self.pins['red'])
-    
+
     ###########################################
 
     @verify_color
     def turn_off(self)
-        self.off(pins.get(self.state))
+        if state is not None:
+            self.off(pins.get(self.state))
 
     @verify_color
     def turn_on(self, color):
-        self.off(pins.get(state))
+        if state is not None:
+            self.off(pins.get(state))
         self.on(pins.get(color))
-        self.state = color2
+        self.state = color
 
     @verify_color
     def change_color(self, color):
-        self.off(pins.get(state))
+        if state is not None:
+            self.off(pins.get(state))
         self.on(pins.get(color))
-        self.state = color2
+        self.state = color
 
 
 def verify_color(func):
@@ -71,5 +74,3 @@ def verify_color(func):
             raise
         return func(color)
     return wrapper
-                    
-            

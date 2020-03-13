@@ -9,42 +9,44 @@ import time
 import subprocess
 import pandas as pd
 
-email = "5092880719@vtext.com"
-message = "message"
-text_message_timeout = 60 * 60 * 2
+#email = "#@vtext.com"
+#message = "message"
+#text_message_timeout = 60 * 60 * 2
 
-#sensitivity = 2000
-sensitivity_percent = 5
+#old sensitivity ~2000
+sensitivity_percent = 10
 start_time = time.time()
 
 cam = Camera("/home/pi/images")
 led = Led()
 
 img_df_1 = cam.get_test_image()
-img_size = len(img_df_1.index)
-sensitivity = (sensitivity_percent/100) * img_size
 
+img_size = len(img_df_1.index)
+print('img_size: ', img_size)
+sensitivity = (sensitivity_percent/100) * img_size
+print('sensitivity: ', sensitivity)
 print("MOTION DETECTED STARTED")
 
 try:
-    led.turn_on('red')
+    #led.turn_on('red')
     while True:
         img_df_2 = cam.get_test_image()
 
-        # check for differences in the red
-        changed_pixels = compare_img_dfs(img_df_2, img_df_2)
-
+        changed_pixels= (abs(img_df_1['red'] - img_df_2['red']) > 3).sum()
+        print('changed pixels: ', changed_pixels)
         if changed_pixels > sensitivity:
-            led.turn_on('green')
+            #led.turn_on('green')
             cam.save_image()
-            led.turn_on('red')
-
+            #led.turn_on('red')
+            #print(img_df_1)
+            #print(img_df_2)
             # send text message alert (move to class)
-            capture_time = time.time()
-            if capture_time - start_time >= text_message_timeout:
+            #capture_time = time.time()
+            #if capture_time - start_time >= text_message_timeout:
                 #os.system(mail(email=email, message=message))
-                start_time = time.time()
-                pass
+                #start_time = time.time()
+                #pass
 
         img_df_1 = img_df_2
 

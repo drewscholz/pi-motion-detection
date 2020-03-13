@@ -21,16 +21,15 @@ class Camera():
     def get_test_image(self):
         command = "raspistill -w 100 -h 75 -t 100 -e bmp -th none -o -"
 
-        #image_data = BytesIO()
         with BytesIO() as image_data:
             image_data.write(subprocess.check_output(command, shell=True))
             image_data.seek(0)
             img = Image.open(image_data)
-        #image_data.close()
+            rgb = img.convert("RGB")
+            array = np.array(rgb.getdata())
 
-        img_df = self.image_to_dataframe(img)
-
-        return img_df
+        df = pd.DataFrame(array, columns=['red', 'green', 'blue'])
+        return df
 
     def save_image(self):
         self.keep_disk_space_free()
@@ -47,9 +46,11 @@ class Camera():
         df = pd.DataFrame(array, columns=['red', 'green', 'blue'])
         return df
 
-    def compare_img_dfs(self, img_df1, img_df2):
-        changed_df = img_df1['red'] != img_df2['red']
-        changed_pixels = changed_df.sum()
+    def compare_img_dfs(self, df1, df2):
+        print(df1['red'].head())
+        print(df2['red'].head())
+        #changed_pixels = (img_df1['red'] != img_df2['red']).sum()
+        changed_pixels= (abs(df1['red'] - df2['red']) > 3).sum()
         return changed_pixels
 
      # Keep free space above given level

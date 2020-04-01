@@ -7,7 +7,7 @@ Motion detection script for a Raspberry PI with v2 camera
 * * * * * /home/drew/download_images.py 2>&1
 
 ## remove week old images everyday at 1:00 AM
-0 1 * * * /home/drew/weekly_cleanup.ph 2>&1
+0 1 * * * /home/drew/weekly_cleanup.py 2>&1
 
 # crontab for pi:
 ## start motion detection script on reboot

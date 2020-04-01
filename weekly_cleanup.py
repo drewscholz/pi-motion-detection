@@ -9,7 +9,8 @@ import os
 
 print("Start weekly cleanup")
 
-filepath = "/var/www/img/images"
+# fill in filepath
+filepath = "path_to_image_directory"
 one_week_ago = datetime.today() - timedelta(days=7)
 
 for filename in sorted(os.listdir(filepath)):

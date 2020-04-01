@@ -1,4 +1,5 @@
 #!/usr/bin/python3
+
 from datetime import datetime
 from PIL import Image
 from Led import Led
@@ -15,7 +16,7 @@ import pandas as pd
 
 #old sensitivity ~2000
 sensitivity_percent = 10
-start_time = time.time()
+#start_time = time.time()
 
 cam = Camera("/home/pi/images")
 led = Led()
@@ -29,16 +30,16 @@ print('sensitivity: ', sensitivity)
 print("MOTION DETECTED STARTED")
 
 try:
-    #led.turn_on('red')
+    led.turn_on('red')
     while True:
         img_df_2 = cam.get_test_image()
 
-        changed_pixels= (abs(img_df_1['red'] - img_df_2['red']) > 3).sum()
-        print('changed pixels: ', changed_pixels)
+        changed_pixels= (abs(img_df_1['red'] - img_df_2['red']) > 4).sum()
+        #print('changed pixels: ', changed_pixels)
         if changed_pixels > sensitivity:
-            #led.turn_on('green')
+            led.turn_on('green')
             cam.save_image()
-            #led.turn_on('red')
+            led.turn_on('red')
             #print(img_df_1)
             #print(img_df_2)
             # send text message alert (move to class)

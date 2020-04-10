@@ -7,36 +7,46 @@ import subprocess
 import time
 import numpy as np
 import pandas as pd
+import cv2
 
-# ToDo: move memory management to it's own class
-    # add function to clean house once a week
+# ToDo: remove memory management once cronjob testing is complete
 
 class Camera():
 
     disk_space_to_reserve = 40 * 1024 * 1024 # Keep 40 mb free on disk
-
+    shared_settings = '-awb auto -ex sports -t 100'
     def __init__(self, filepath):
         self.filepath = filepath
 
     def get_test_image(self):
-        command = "raspistill -w 100 -h 75 -t 100 -e bmp -th none -o -"
-
+        #command = "raspistill -w 100 -h 75 -awb auto -ex sports -t 100 -th none -o -" #-e bmp -w 100 -h 75 -th none
+        command = "raspistill -w 640 -h 480 -awb auto -ex sports -t 100 -q 10 -e jpg -o -"
+        min_threshold = 40
+        max_threshold = 40
         with BytesIO() as image_data:
             image_data.write(subprocess.check_output(command, shell=True))
             image_data.seek(0)
-            img = Image.open(image_data)
-            rgb = img.convert("RGB")
-            array = np.array(rgb.getdata())
+            #img = Image.open(image_data)
+            #rgb = img.convert("RGB")
+            #array = np.array(rgb)
+            #array = array[:, :, ::-1].copy() # RGB to BGR
+            #img = cv2.cvtColor(array, cv2.COLOR_BGR2GRAY)
+            img_array = np.frombuffer(image_data.read(), dtype=np.uint8)
+            #img_array = np.asarray(bytearray(image_data.read()), dtype=np.uint8)
+            img = cv2.imdecode(img_array, cv2.IMREAD_GRAYSCALE)
+            # open image in grayscale
+            #img = cv2.imread(image_data, cv2.IMREAD_GRAYSCALE)
+        #df = pd.DataFrame(array, columns=['red', 'green', 'blue'])
+        #return df
+        return img
 
-        df = pd.DataFrame(array, columns=['red', 'green', 'blue'])
-        return df
 
     def save_image(self):
         self.keep_disk_space_free()
         time = datetime.now()
         t = time.strftime("%Y-%m-%d_%H:%M:%S")
         filename = self.filepath + "/"+ t +".jpg"
-        command = "raspistill -ev -2 -t 100 -q 10 -a 12 -e jpg -o %s" % filename
+        command = "raspistill -awb auto -ex sports -t 100 -q 10 -a 12 -e jpg -o %s" % filename
         subprocess.call(command, shell=True)
         print("SAVING IMAGE %s" % filename)
 
